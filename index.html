@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Workflow Visual Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .analogy-box {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e17055;
+        }
+        
+        .workflow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .stage {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .stage:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stage-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .working-directory {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
+        }
+        
+        .staging-area {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fffbf0, #fff3cd);
+        }
+        
+        .repository {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #f0fff4, #d4edda);
+        }
+        
+        .file-item {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .file-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .untracked {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px dashed #f44336;
+        }
+        
+        .modified {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 2px solid #ff9800;
+        }
+        
+        .staged {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border: 2px solid #9c27b0;
+        }
+        
+        .committed {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #6c757d;
+            margin: 10px 0;
+        }
+        
+        .command-box {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .command-box::before {
+            content: "$ ";
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .scenario {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .commit-state {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .commit-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #27ae60;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .interactive-demo {
+            background: #fff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .demo-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .demo-button:hover {
+            background: #2980b9;
+        }
+        
+        .state-indicator {
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .commit-state {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .legend {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Git Workflow: From Chaos to Control</h1>
+        
+        <div class="analogy-box">
+            <h3>📚 Real-World Analogy: Writing a Book</h3>
+            <p><strong>Think of Git like writing a book with multiple drafts:</strong></p>
+            <ul>
+                <li><strong>Working Directory</strong> = Your messy desk with loose papers, notes, and draft chapters</li>
+                <li><strong>Staging Area</strong> = Your organized folder where you put "ready to publish" chapters</li>
+                <li><strong>Repository</strong> = The published book versions in your library</li>
+            </ul>
+        </div>
+
+        <div class="workflow-container">
+            <div class="stage working-directory">
+                <div class="stage-title">
+                    📝 Working Directory (Your Workspace)
+                    <span class="state-indicator" style="background: #ffebee; color: #c62828;">Local Files</span>
+                </div>
+                <p>This is where you actively work on your files. Files here can be:</p>
+                <div style="margin: 15px 0;">
+                    <div class="file-item untracked">new-feature.js <small>(untracked)</small></div>
+                    <div class="file-item modified">app.js <small>(modified)</small></div>
+                    <div class="file-item">README.md <small>(unchanged)</small></div>
+                </div>
+                <div class="command-box">git status</div>
+            </div>
+
+            <div class="arrow">⬇️ git add</div>
+
+            <div class="stage staging-area">
+                <div class="stage-title">
+                    📋 Staging Area (Ready for Commit)
+                    <span class="state-indicator" style="background: #fff3cd; color: #856404;">Index</span>
+                </div>
+                <p>Files you've prepared for the next commit. Like organizing chapters before publishing:</p>
+                <div style="margin: 15px 0;">
+                    <div class="file-item staged">new-feature.js <small>(staged)</small></div>
+                    <div class="file-item staged">app.js <small>(staged)</small></div>
+                </div>
+                <div class="command-box">git add .</div>
+                <div class="command-box">git add filename.js</div>
+            </div>
+
+            <div class="arrow">⬇️ git commit</div>
+
+            <div class="stage repository">
+                <div class="stage-title">
+                    📚 Repository (Permanent History)
+                    <span class="state-indicator" style="background: #d4edda; color: #155724;">Git History</span>
+                </div>
+                <p>Your committed snapshots - like published book editions:</p>
+                <div style="margin: 15px 0;">
+                    <div class="file-item committed">Commit ABC123: Added new feature</div>
+                    <div class="file-item committed">Commit DEF456: Fixed login bug</div>
+                </div>
+                <div class="command-box">git commit -m "Add new feature"</div>
+            </div>
+        </div>
+
+        <div class="scenario">
+            <h3>🎯 Real Project Scenario: Building a Todo App</h3>
+            <p>Let's walk through a typical development session:</p>
+            
+            <div class="timeline">
+                <div class="commit-state">
+                    <div class="commit-circle">1</div>
+                    <div>
+                        <strong>Initial State</strong><br>
+                        You create new files: <code>index.html</code>, <code>style.css</code>, <code>app.js</code><br>
+                        <em>Status: All files are UNTRACKED (Git doesn't know about them yet)</em>
+                    </div>
+                </div>
+
+                <div class="commit-state">
+                    <div class="commit-circle">2</div>
+                    <div>
+                        <strong>First Add</strong><br>
+                        Run: <code>git add .</code><br>
+                        <em>Status: All files move to STAGING AREA (ready to commit)</em>
+                    </div>
+                </div>
+
+                <div class="commit-state">
+                    <div class="commit-circle">3</div>
+                    <div>
+                        <strong>First Commit</strong><br>
+                        Run: <code>git commit -m "Initial todo app setup"</code><br>
+                        <em>Status: All files are now TRACKED and COMMITTED</em>
+                    </div>
+                </div>
+
+                <div class="commit-state">
+                    <div class="commit-circle">4</div>
+                    <div>
+                        <strong>Making Changes</strong><br>
+                        You modify <code>app.js</code> and create <code>utils.js</code><br>
+                        <em>Status: app.js = MODIFIED (tracked but changed), utils.js = UNTRACKED</em>
+                    </div>
+                </div>
+
+                <div class="commit-state">
+                    <div class="commit-circle">5</div>
+                    <div>
+                        <strong>Selective Staging</strong><br>
+                        Run: <code>git add app.js</code> (stage only the modified file)<br>
+                        <em>Status: app.js = STAGED, utils.js = still UNTRACKED</em>
+                    </div>
+                </div>
+
+                <div class="commit-state">
+                    <div class="commit-circle">6</div>
+                    <div>
+                        <strong>Second Commit</strong><br>
+                        Run: <code>git commit -m "Add todo creation functionality"</code><br>
+                        <em>Result: Only app.js changes are committed, utils.js remains untracked</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3 style="grid-column: 1 / -1; margin-bottom: 20px;">🏷️ File Status Legend</h3>
+            <div class="legend-item">
+                <div class="file-item untracked">UNTRACKED</div>
+                <span>New files Git doesn't know about</span>
+            </div>
+            <div class="legend-item">
+                <div class="file-item modified">MODIFIED</div>
+                <span>Tracked files with changes</span>
+            </div>
+            <div class="legend-item">
+                <div class="file-item staged">STAGED</div>
+                <span>Files ready for next commit</span>
+            </div>
+            <div class="legend-item">
+                <div class="file-item committed">COMMITTED</div>
+                <span>Saved in Git history permanently</span>
+            </div>
+        </div>
+
+        <div class="interactive-demo">
+            <h3>🎮 Key Commands Cheat Sheet</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div>
+                    <h4>📊 Check Status</h4>
+                    <div class="command-box">git status</div>
+                    <small>See what's untracked, modified, or staged</small>
+                </div>
+                <div>
+                    <h4>➕ Stage Files</h4>
+                    <div class="command-box">git add filename.js</div>
+                    <div class="command-box">git add .</div>
+                    <small>Move files to staging area</small>
+                </div>
+                <div>
+                    <h4>💾 Commit Changes</h4>
+                    <div class="command-box">git commit -m "Your message"</div>
+                    <small>Save staged changes permanently</small>
+                </div>
+                <div>
+                    <h4>🔄 Unstage Files</h4>
+                    <div class="command-box">git reset filename.js</div>
+                    <small>Move files back from staging to working directory</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="analogy-box">
+            <h3>💡 Memory Trick: The Restaurant Analogy</h3>
+            <p><strong>Think of Git like a restaurant kitchen:</strong></p>
+            <ul>
+                <li><strong>Working Directory</strong> = Kitchen counter (ingredients and work in progress)</li>
+                <li><strong>Staging Area</strong> = Plating station (dishes ready to serve)</li>
+                <li><strong>Repository</strong> = Menu history (all meals ever served and recorded)</li>
+                <li><strong>git add</strong> = Moving food from counter to plating station</li>
+                <li><strong>git commit</strong> = Serving the dish and adding it to the restaurant's history</li>
+            </ul>
+        </div>
+
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 30px 0;">
+            <h3>🎯 Quick Interview Tips</h3>
+            <ul>
+                <li><strong>Untracked</strong> = Files Git doesn't know exist yet</li>
+                <li><strong>Modified</strong> = Known files that have been changed</li>
+                <li><strong>Staged</strong> = Files prepared for the next commit</li>
+                <li><strong>Committed</strong> = Files saved in Git's permanent history</li>
+                <li><strong>Working Directory → Staging → Repository</strong> is the core flow</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
